@@ -9,6 +9,8 @@
 #import "KeyboardViewController.h"
 #import "KeyView.h"
 
+typedef void (^KeyHandler)(KeyView*);
+
 @interface KeyboardViewController ()
 @property (nonatomic, strong) UIButton* nextKeyboardButton;
 @end
@@ -59,7 +61,76 @@
 
 - (void)addKeyboardButtons {
     
-    // Set up the "next keyboard" button
+    [self addNextKeyboardButton];
+    
+    KeyHandler Insert = ^(KeyView* keyView) { [self.textDocumentProxy insertText:[keyView displayedText]]; };
+    KeyHandler Delete = ^(KeyView* keyView) { [self.textDocumentProxy deleteBackward]; };
+    NSArray* handlerMap = @[Insert, Insert, Delete, Insert];
+    
+    // Set up the alphabet keys
+    NSString* keySettingsPath = [[NSBundle mainBundle] pathForResource:@"Keys.en" ofType:@"plist"];
+    NSDictionary* keySettings = [NSDictionary dictionaryWithContentsOfFile:keySettingsPath];
+    NSArray* keyboardRows = [keySettings objectForKey:@"rows"];
+    UIView* previousRow = nil;
+    for (NSArray* keyboardRow in keyboardRows) {
+        UIView* row = [[UIView alloc] init];
+        row.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.view addSubview:row];
+        
+        NSDictionary* lastLetter = [keyboardRow lastObject];
+        UIView* previousLetter = nil;
+        for (NSDictionary* alphabetLetter in keyboardRow) {
+            NSString* displayedText = [alphabetLetter objectForKey:@"displayedText"];
+            NSInteger type = [[alphabetLetter objectForKey:@"type"] intValue];
+            KeyView* alphabetKey = [[KeyView alloc] initWithDisplayedText:displayedText type:type handler:handlerMap[type]];
+            [row addSubview:alphabetKey];
+            
+            [NSLayoutConstraint activateConstraints:
+             [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[alphabetKey]|"
+                                                     options:0
+                                                     metrics:nil
+                                                       views:NSDictionaryOfVariableBindings(alphabetKey)]];
+            
+            NSString* lettersVisualFormat = @"H:|[alphabetKey]";
+            NSDictionary* letterViews = NSDictionaryOfVariableBindings(alphabetKey);
+            if (previousLetter) {
+                lettersVisualFormat = @"[previousLetter][alphabetKey(==previousLetter)]";
+                letterViews = NSDictionaryOfVariableBindings(previousLetter, alphabetKey);
+            }
+            if (alphabetLetter == lastLetter) {
+                lettersVisualFormat = @"[previousLetter][alphabetKey(==previousLetter)]|";
+            }
+            [NSLayoutConstraint activateConstraints:
+             [NSLayoutConstraint constraintsWithVisualFormat:lettersVisualFormat
+                                                     options:0
+                                                     metrics:nil
+                                                       views:letterViews]];
+            previousLetter = alphabetKey;
+        }
+        
+        [NSLayoutConstraint activateConstraints:
+         [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[row]|"
+                                                 options:0
+                                                 metrics:nil
+                                                   views:NSDictionaryOfVariableBindings(row)]];
+        
+        NSString* rowsVisualFormat = @"V:|[row(==60)]";
+        NSDictionary* rowViews = NSDictionaryOfVariableBindings(row);
+        if (previousRow) {
+            rowsVisualFormat = @"V:[previousRow][row(==60)]";
+            rowViews = NSDictionaryOfVariableBindings(previousRow, row);
+        }
+        [NSLayoutConstraint activateConstraints:
+         [NSLayoutConstraint constraintsWithVisualFormat:rowsVisualFormat
+                                                 options:0
+                                                 metrics:nil
+                                                   views:rowViews]];
+        previousRow = row;
+    }
+    
+}
+
+- (void)addNextKeyboardButton {
     self.nextKeyboardButton = [UIButton buttonWithType:UIButtonTypeSystem];
     UIButton* nextKeyboardButton = self.nextKeyboardButton;
     [self.nextKeyboardButton setTitle:@"🌐" forState:UIControlStateNormal];
@@ -76,69 +147,6 @@
                                              options:0
                                              metrics:nil
                                                views:NSDictionaryOfVariableBindings(nextKeyboardButton)]];
-    
-    // Set up the alphabet keys
-    NSArray* keyboardRows = @[@[@"Q", @"W", @"E", @"R", @"T", @"Y", @"U", @"I", @"O", @"P"],
-                              @[@"A", @"S", @"D", @"F", @"G", @"H", @"J", @"K", @"L"],
-                              @[@"Z", @"X", @"C", @"V", @"B", @"N", @"M"]
-                            ];
-    UIView* previousRow = nil;
-    for (NSArray* keyboardRow in keyboardRows) {
-        UIView* row = [[UIView alloc] init];
-        row.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.view addSubview:row];
-        
-        NSString* lastLetter = [keyboardRow lastObject];
-        UIView* previousLetter = nil;
-        for (NSString* alphabetLetter in keyboardRow) {
-            KeyView* alphabetKey = [[KeyView alloc] initWithDisplayedText:alphabetLetter handler:^(KeyView* keyView) {
-                [self.textDocumentProxy insertText:[keyView displayedText]];
-            }];
-            [row addSubview:alphabetKey];
-            
-            [NSLayoutConstraint activateConstraints:
-             [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[alphabetKey]|"
-                                                     options:0
-                                                     metrics:nil
-                                                       views:NSDictionaryOfVariableBindings(alphabetKey)]];
-            
-            NSString* lettersVisualFormat = @"H:|-[alphabetKey]";
-            NSDictionary* letterViews = NSDictionaryOfVariableBindings(alphabetKey);
-            if (previousLetter) {
-                lettersVisualFormat = @"[previousLetter]-[alphabetKey(==previousLetter)]";
-                letterViews = NSDictionaryOfVariableBindings(previousLetter, alphabetKey);
-            }
-            if (alphabetLetter == lastLetter) {
-                lettersVisualFormat = @"[previousLetter]-[alphabetKey(==previousLetter)]-|";
-            }
-            [NSLayoutConstraint activateConstraints:
-             [NSLayoutConstraint constraintsWithVisualFormat:lettersVisualFormat
-                                                     options:0
-                                                     metrics:nil
-                                                       views:letterViews]];
-            previousLetter = alphabetKey;
-        }
-        
-        [NSLayoutConstraint activateConstraints:
-         [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[row]|"
-                                                 options:0
-                                                 metrics:nil
-                                                   views:NSDictionaryOfVariableBindings(row)]];
-        
-        NSString* rowsVisualFormat = @"V:|-[row(==50)]";
-        NSDictionary* rowViews = NSDictionaryOfVariableBindings(row);
-        if (previousRow) {
-            rowsVisualFormat = @"V:[previousRow]-[row(==50)]";
-            rowViews = NSDictionaryOfVariableBindings(previousRow, row);
-        }
-        [NSLayoutConstraint activateConstraints:
-         [NSLayoutConstraint constraintsWithVisualFormat:rowsVisualFormat
-                                                 options:0
-                                                 metrics:nil
-                                                   views:rowViews]];
-        previousRow = row;
-    }
-    
 }
 
 @end

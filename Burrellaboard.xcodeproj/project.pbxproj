@@ -16,6 +16,7 @@
 		47F4516B1B2DF7D200E876AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 47F451691B2DF7D200E876AD /* LaunchScreen.storyboard */; };
 		47F4517A1B2DF80E00E876AD /* KeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F451791B2DF80E00E876AD /* KeyboardViewController.m */; };
 		47F4517E1B2DF80E00E876AD /* Type.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 47F451761B2DF80E00E876AD /* Type.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		47F862061B2FE2CC004F63E8 /* Keys.en.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47F862051B2FE2CC004F63E8 /* Keys.en.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		47F451781B2DF80E00E876AD /* KeyboardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardViewController.h; sourceTree = "<group>"; };
 		47F451791B2DF80E00E876AD /* KeyboardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeyboardViewController.m; sourceTree = "<group>"; };
 		47F4517B1B2DF80E00E876AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		47F862051B2FE2CC004F63E8 /* Keys.en.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Keys.en.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +128,7 @@
 			children = (
 				47F451781B2DF80E00E876AD /* KeyboardViewController.h */,
 				47F451791B2DF80E00E876AD /* KeyboardViewController.m */,
+				47F862051B2FE2CC004F63E8 /* Keys.en.plist */,
 				479E780C1B2E8C580046D83D /* KeyView.h */,
 				479E780D1B2E8C580046D83D /* KeyView.m */,
 				47F4517B1B2DF80E00E876AD /* Info.plist */,
@@ -183,7 +186,7 @@
 				TargetAttributes = {
 					47F451571B2DF7D200E876AD = {
 						CreatedOnToolsVersion = 7.0;
-						DevelopmentTeam = 7MLD37CY4Q;
+						DevelopmentTeam = TMGJ7F9B46;
 					};
 					47F451751B2DF80E00E876AD = {
 						CreatedOnToolsVersion = 7.0;
@@ -225,6 +228,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47F862061B2FE2CC004F63E8 /* Keys.en.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -373,7 +377,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.alexburrell.Burrellaboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -388,7 +391,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.alexburrell.Burrellaboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

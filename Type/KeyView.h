@@ -8,9 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, KeyViewType) {
+    KeyViewTypeLetter = 0,
+    KeyViewTypeReturn,
+    KeyViewTypeBackspace,
+    KeyViewTypeExpand
+};
+
 @interface KeyView : UIView
 
-- (instancetype)initWithDisplayedText:(NSString*)text handler:(void (^)(KeyView*))handler;
+- (instancetype)initWithDisplayedText:(NSString*)text type:(KeyViewType)type handler:(void (^)(KeyView*))handler;
 
 @property (readonly) NSString* displayedText;
 
