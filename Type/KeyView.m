@@ -46,8 +46,15 @@
     self.keyLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.keyLabel.text = text;
     self.keyLabel.textAlignment = NSTextAlignmentCenter;
-//    self.keyLabel.layer.borderColor = [UIColor lightGrayColor].CGColor;
-//    self.keyLabel.layer.borderWidth = 1;
+    
+    if (self.type == KeyViewTypeLetter) {
+        [self.keyLabel setTextColor:[UIColor blackColor]];
+    } else if (self.type == KeyViewTypeBackspace) {
+        [self.keyLabel setTextColor:[UIColor redColor]];
+    } else {
+        [self.keyLabel setTextColor:[UIColor blueColor]];
+    }
+    
     [self addSubview:self.keyLabel];
     
     UILabel* keyLabel = self.keyLabel;
