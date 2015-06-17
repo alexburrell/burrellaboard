@@ -13,6 +13,7 @@
 @property (nonatomic, copy) void (^handler)(KeyView*);
 @property UITapGestureRecognizer* singleTapRecognizer;
 @property UILongPressGestureRecognizer* longPressRecognizer;
+@property UISwipeGestureRecognizer* swipeRecognizer;
 @property NSTimer* timer;
 @property NSString* displayedText;
 @property KeyViewType type;
@@ -67,11 +68,24 @@
     }
 }
 
+- (void)handleSwipe:(UIGestureRecognizer*)swipeRecognizer {
+    if (swipeRecognizer.state == UIGestureRecognizerStateRecognized) {
+        self.displayedText = [self.displayedText uppercaseString];
+        self.handler(self);
+        self.displayedText = [self.displayedText lowercaseString];
+    }
+}
+
 - (void)createGestureRecognizers {
     self.singleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
     [self addGestureRecognizer:self.singleTapRecognizer];
+    
     self.longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     [self addGestureRecognizer:self.longPressRecognizer];
+    
+    self.swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+    [self.swipeRecognizer setDirection:UISwipeGestureRecognizerDirectionUp];
+    [self addGestureRecognizer:self.swipeRecognizer];
 }
 
 - (void)createLabelWithText:(NSString*)text {
