@@ -12,6 +12,8 @@
 @property UILabel* keyLabel;
 @property (nonatomic, copy) void (^handler)(KeyView*);
 @property UITapGestureRecognizer* singleTapRecognizer;
+@property UILongPressGestureRecognizer* longPressRecognizer;
+@property NSTimer* timer;
 @property NSString* displayedText;
 @property KeyViewType type;
 
@@ -30,15 +32,41 @@
         self.translatesAutoresizingMaskIntoConstraints = NO;
                 
         [self createLabelWithText:text];
+        [self createGestureRecognizers];
     }
     
     return self;
+}
+
+- (void)invokeHandler:(NSTimer*)timer {
+    self.handler(self);
 }
 
 - (void)handleSingleTap:(UIGestureRecognizer*)tapRecognizer {
     if (tapRecognizer.state == UIGestureRecognizerStateRecognized) {
         self.handler(self);
     }
+}
+
+- (void)handleLongPress:(UIGestureRecognizer*)longPressRecognizer {
+    if (self.type == KeyViewTypeBackspace) {
+        if (longPressRecognizer.state == UIGestureRecognizerStateBegan) {
+            if (!self.timer || !self.timer.valid) {
+                self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(invokeHandler:) userInfo:nil repeats:YES];
+            }
+        } else if (longPressRecognizer.state == UIGestureRecognizerStateEnded ||
+                   longPressRecognizer.state == UIGestureRecognizerStateFailed ||
+                   longPressRecognizer.state == UIGestureRecognizerStateFailed) {
+            [self.timer invalidate];
+        }
+    }
+}
+
+- (void)createGestureRecognizers {
+    self.singleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+    [self addGestureRecognizer:self.singleTapRecognizer];
+    self.longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    [self addGestureRecognizer:self.longPressRecognizer];
 }
 
 - (void)createLabelWithText:(NSString*)text {
@@ -69,8 +97,6 @@
                                              metrics:nil
                                                views:NSDictionaryOfVariableBindings(keyLabel)]];
     
-    self.singleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-    [self addGestureRecognizer:self.singleTapRecognizer];
 }
 
 @end
