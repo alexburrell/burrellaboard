@@ -26,8 +26,13 @@
     
     if (self) {
         self.handler = handler;
-        self.displayedText = text;
         self.type = type;
+
+        if (self.type == KeyViewTypeReturn) {
+            self.displayedText = @"\n";
+        } else {
+            self.displayedText = text;
+        }
         
         self.translatesAutoresizingMaskIntoConstraints = NO;
                 
