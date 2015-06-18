@@ -13,6 +13,7 @@ typedef void (^KeyHandler)(KeyView*);
 
 @interface KeyboardViewController ()
 @property (nonatomic, strong) UIButton* nextKeyboardButton;
+@property NSArray* handlerMap;
 @end
 
 @implementation KeyboardViewController
@@ -22,6 +23,10 @@ typedef void (^KeyHandler)(KeyView*);
     [super viewDidLoad];
     
     [self.view setBackgroundColor:[UIColor whiteColor]];
+    
+    KeyHandler Insert = ^(KeyView* keyView) { [self.textDocumentProxy insertText:[keyView displayedText]]; };
+    KeyHandler Delete = ^(KeyView* keyView) { [self.textDocumentProxy deleteBackward]; };
+    self.handlerMap = @[Insert, Insert, Delete, Insert, Insert];
     
     // Adding a top border to the keyboard
     UIView* topBorder = [[UIView alloc] initWithFrame:CGRectZero];
@@ -61,12 +66,6 @@ typedef void (^KeyHandler)(KeyView*);
 
 - (void)addKeyboardButtons {
     
-    [self addNextKeyboardButton];
-    
-    KeyHandler Insert = ^(KeyView* keyView) { [self.textDocumentProxy insertText:[keyView displayedText]]; };
-    KeyHandler Delete = ^(KeyView* keyView) { [self.textDocumentProxy deleteBackward]; };
-    NSArray* handlerMap = @[Insert, Insert, Delete, Insert];
-    
     // Set up the alphabet keys
     NSString* keySettingsPath = [[NSBundle mainBundle] pathForResource:@"Keys.en" ofType:@"plist"];
     NSDictionary* keySettings = [NSDictionary dictionaryWithContentsOfFile:keySettingsPath];
@@ -82,7 +81,7 @@ typedef void (^KeyHandler)(KeyView*);
         for (NSDictionary* alphabetLetter in keyboardRow) {
             NSString* displayedText = [alphabetLetter objectForKey:@"displayedText"];
             NSInteger type = [[alphabetLetter objectForKey:@"type"] intValue];
-            KeyView* alphabetKey = [[KeyView alloc] initWithDisplayedText:displayedText type:type handler:handlerMap[type]];
+            KeyView* alphabetKey = [[KeyView alloc] initWithDisplayedText:displayedText type:type handler:self.handlerMap[type]];
             [row addSubview:alphabetKey];
             
             [NSLayoutConstraint activateConstraints:
@@ -128,25 +127,40 @@ typedef void (^KeyHandler)(KeyView*);
         previousRow = row;
     }
     
+    [self layoutBottomRow];
+    
 }
 
-- (void)addNextKeyboardButton {
+- (void)layoutBottomRow {
+    // Add space key
+    KeyView* spaceKey = [[KeyView alloc] initWithDisplayedText:@"space" type:KeyViewTypeSpace handler:self.handlerMap[KeyViewTypeSpace]];
+    [self.view addSubview:spaceKey];
+    
+    // Add next button
     self.nextKeyboardButton = [UIButton buttonWithType:UIButtonTypeSystem];
     UIButton* nextKeyboardButton = self.nextKeyboardButton;
     [self.nextKeyboardButton setTitle:@"🌐" forState:UIControlStateNormal];
     self.nextKeyboardButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.nextKeyboardButton addTarget:self action:@selector(advanceToNextInputMode) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.nextKeyboardButton];
+    
+    // Layout bottom row buttons
     [NSLayoutConstraint activateConstraints:
-     [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[nextKeyboardButton]"
+     [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[nextKeyboardButton]-[spaceKey]-8-|"
+                                             options:0
+                                             metrics:nil
+                                               views:NSDictionaryOfVariableBindings(nextKeyboardButton, spaceKey)]];
+    [NSLayoutConstraint activateConstraints:
+     [NSLayoutConstraint constraintsWithVisualFormat:@"V:[nextKeyboardButton]-8-|"
                                              options:0
                                              metrics:nil
                                                views:NSDictionaryOfVariableBindings(nextKeyboardButton)]];
     [NSLayoutConstraint activateConstraints:
-     [NSLayoutConstraint constraintsWithVisualFormat:@"V:[nextKeyboardButton]|"
+     [NSLayoutConstraint constraintsWithVisualFormat:@"V:[spaceKey]-13-|"
                                              options:0
                                              metrics:nil
-                                               views:NSDictionaryOfVariableBindings(nextKeyboardButton)]];
+                                               views:NSDictionaryOfVariableBindings(spaceKey)]];
+    
 }
 
 @end

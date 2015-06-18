@@ -12,6 +12,7 @@ typedef NS_ENUM(NSInteger, KeyViewType) {
     KeyViewTypeLetter = 0,
     KeyViewTypeReturn,
     KeyViewTypeBackspace,
+    KeyViewTypeSpace,
     KeyViewTypeExpand
 };
 

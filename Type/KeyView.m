@@ -17,7 +17,6 @@
 @property NSTimer* timer;
 @property NSString* displayedText;
 @property KeyViewType type;
-
 @end
 
 @implementation KeyView
@@ -31,6 +30,8 @@
 
         if (self.type == KeyViewTypeReturn) {
             self.displayedText = @"\n";
+        } else if (self.type == KeyViewTypeSpace) {
+            self.displayedText = @" ";
         } else {
             self.displayedText = text;
         }
