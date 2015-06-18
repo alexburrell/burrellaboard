@@ -13,7 +13,8 @@ typedef NS_ENUM(NSInteger, KeyViewType) {
     KeyViewTypeReturn,
     KeyViewTypeBackspace,
     KeyViewTypeSpace,
-    KeyViewTypeExpand
+    KeyViewTypeExpand,
+    KeyViewTypeEmoji
 };
 
 @interface KeyView : UIView

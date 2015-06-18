@@ -26,7 +26,7 @@ typedef void (^KeyHandler)(KeyView*);
     
     KeyHandler Insert = ^(KeyView* keyView) { [self.textDocumentProxy insertText:[keyView displayedText]]; };
     KeyHandler Delete = ^(KeyView* keyView) { [self.textDocumentProxy deleteBackward]; };
-    self.handlerMap = @[Insert, Insert, Delete, Insert, Insert];
+    self.handlerMap = @[Insert, Insert, Delete, Insert, Insert, Insert];
     
     // Adding a top border to the keyboard
     UIView* topBorder = [[UIView alloc] initWithFrame:CGRectZero];
@@ -144,12 +144,16 @@ typedef void (^KeyHandler)(KeyView*);
     [self.nextKeyboardButton addTarget:self action:@selector(advanceToNextInputMode) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.nextKeyboardButton];
     
+    // Add space key
+    KeyView* smileKey = [[KeyView alloc] initWithDisplayedText:@"😊" type:KeyViewTypeEmoji handler:self.handlerMap[KeyViewTypeEmoji]];
+    [self.view addSubview:smileKey];
+    
     // Layout bottom row buttons
     [NSLayoutConstraint activateConstraints:
-     [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[nextKeyboardButton]-[spaceKey]-8-|"
+     [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[nextKeyboardButton]-[spaceKey]-[smileKey]-10-|"
                                              options:0
                                              metrics:nil
-                                               views:NSDictionaryOfVariableBindings(nextKeyboardButton, spaceKey)]];
+                                               views:NSDictionaryOfVariableBindings(nextKeyboardButton, spaceKey, smileKey)]];
     [NSLayoutConstraint activateConstraints:
      [NSLayoutConstraint constraintsWithVisualFormat:@"V:[nextKeyboardButton]-8-|"
                                              options:0
@@ -160,6 +164,11 @@ typedef void (^KeyHandler)(KeyView*);
                                              options:0
                                              metrics:nil
                                                views:NSDictionaryOfVariableBindings(spaceKey)]];
+    [NSLayoutConstraint activateConstraints:
+     [NSLayoutConstraint constraintsWithVisualFormat:@"V:[smileKey]-13-|"
+                                             options:0
+                                             metrics:nil
+                                               views:NSDictionaryOfVariableBindings(smileKey)]];
     
 }
 

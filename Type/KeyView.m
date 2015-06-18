@@ -71,9 +71,16 @@
 
 - (void)handleSwipe:(UIGestureRecognizer*)swipeRecognizer {
     if (swipeRecognizer.state == UIGestureRecognizerStateRecognized) {
-        self.displayedText = [self.displayedText uppercaseString];
-        self.handler(self);
-        self.displayedText = [self.displayedText lowercaseString];
+        if (self.type == KeyViewTypeLetter) {
+            self.displayedText = [self.displayedText uppercaseString];
+            self.handler(self);
+            self.displayedText = [self.displayedText lowercaseString];
+        } else if (self.type == KeyViewTypeEmoji) {
+            NSString* originalDisplayedText = self.displayedText;
+            self.displayedText = @"😀";
+            self.handler(self);
+            self.displayedText = originalDisplayedText;
+        }
     }
 }
 
